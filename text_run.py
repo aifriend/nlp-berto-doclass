@@ -57,15 +57,6 @@ class GbcNlpService:
         # add label_text by numbers
         self.df['label'] = self.df.Category.replace(self.label_dict)
 
-        # Data Loaders
-        self.data_loader_train = DataLoader(self.dataset_train,
-                                            sampler=RandomSampler(self.dataset_train),
-                                            batch_size=self.BATCH_SIZE)
-
-        self.data_loader_validation = DataLoader(self.dataset_val,
-                                                 sampler=SequentialSampler(self.dataset_val),
-                                                 batch_size=self.BATCH_SIZE)
-
         """
         Because the labels are imbalanced,
         we split the data set in a stratified fashion,
@@ -138,6 +129,15 @@ class GbcNlpService:
         attention_masks_val = encoded_data_val['attention_mask']
         labels_val = torch.tensor(self.df[self.df.data_type == 'val'].label.values)
         self.dataset_val = TensorDataset(input_ids_val, attention_masks_val, labels_val)
+
+        # Data Loaders
+        self.data_loader_train = DataLoader(self.dataset_train,
+                                            sampler=RandomSampler(self.dataset_train),
+                                            batch_size=self.BATCH_SIZE)
+
+        self.data_loader_validation = DataLoader(self.dataset_val,
+                                                 sampler=SequentialSampler(self.dataset_val),
+                                                 batch_size=self.BATCH_SIZE)
 
     def modeling(self):
         """

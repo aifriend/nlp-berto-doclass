@@ -527,6 +527,9 @@ ipython_config.py
 **/pyvenv/
 **/.serverless/
 **/*.log
-/data/
+/data/from_image/
+/data/from_text/
 /data_volume/
-/model/
+/model/image/
+/model/text/
+/data/celeba/
