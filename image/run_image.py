@@ -17,7 +17,7 @@ plt.ion()  # interactive mode
 
 class GbcCnnService:
     DEVICE_TYPE = 'cuda:0'
-    DATA_DIR = 'data/from_image'
+    DATA_DIR = 'data/'
     NUM_EPOCHS = 10
 
     def __init__(self):
@@ -61,10 +61,15 @@ class GbcCnnService:
             for x in ['train', 'val']}
 
         self.dataset_size_dict = {x: len(image_datasets[x]) for x in ['train', 'val']}
-        self.class_name_list = image_datasets['train'].class_list
+        self.class_name_list = image_datasets['train'].classes
 
-        # Get a batch of training data
+        # Get a batch of training data to show
         self.inputs, self.class_list = next(iter(self.data_loader['train']))
+        # out = torchvision.utils.make_grid(image_service.inputs)
+        # image_service.image_show(out, title=[
+        #     image_service.class_name_list[x] for x in image_service.class_list])
+        # plt.pause(1.5)  # pause a bit so that plots are updated
+        # plt.close()
 
     @staticmethod
     def image_show(inp, title=None):
@@ -76,8 +81,8 @@ class GbcCnnService:
         plt.imshow(inp)
         if title is not None:
             plt.title(title)
-        plt.pause(0.5)  # pause a bit so that plots are updated
-        time.sleep(5)
+        plt.pause(1.5)  # pause a bit so that plots are updated
+        plt.close()
 
     def train_model(self, _num_epochs=10):
         since = time.time()
@@ -196,12 +201,7 @@ class GbcCnnService:
 if __name__ == '__main__':
     image_service = GbcCnnService()
 
-    # Make a grid from batch
-    out = torchvision.utils.make_grid(image_service.inputs)
-
-    image_service.image_show(out, title=[
-        image_service.class_name_list[x] for x in image_service.class_list])
-    plt.close()
+    image_service.load_data()
 
     image_service.modeling()
 

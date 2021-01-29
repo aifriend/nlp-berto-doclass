@@ -140,19 +140,6 @@ class GbcGanService:
             nn.init.normal_(m.weight.data, 1.0, 0.02)
             nn.init.constant_(m.bias.data, 0)
 
-    def image_show(self):
-        # Plot some training images
-        real_batch = next(iter(self.data_loader))
-        plt.figure(figsize=(8, 8))
-        plt.axis("off")
-        plt.title("Training Images")
-        plt.imshow(np.transpose(
-            vutils.make_grid(real_batch[0].to(self.device)[:64],
-                             padding=2, normalize=True).cpu(), (1, 2, 0)))
-        plt.pause(0.5)  # pause a bit so that plots are updated
-        time.sleep(5)
-        plt.close()
-
     def init(self):
         # Set random seed for reproducibility
         manualSeed = 999
@@ -310,14 +297,33 @@ class GbcGanService:
         plt.ylabel("Loss")
         plt.legend()
         plt.show()
+        plt.pause(0.5)
+        time.sleep(15)
+
+    def image_show(self):
+        # Plot some training images
+        real_batch = next(iter(self.data_loader))
+        plt.figure(figsize=(8, 8))
+        plt.axis("off")
+        plt.title("Training Images")
+        plt.imshow(np.transpose(
+            vutils.make_grid(real_batch[0].to(self.device)[:64],
+                             padding=2, normalize=True).cpu(), (1, 2, 0)))
+        plt.pause(0.5)  # pause a bit so that plots are updated
+        time.sleep(5)
+        plt.close()
 
     @staticmethod
     def show_generated_fake():
         fig = plt.figure(figsize=(8, 8))
         plt.axis("off")
-        ims = [[plt.imshow(np.transpose(i, (1, 2, 0)), animated=True)] for i in gan_service.img_list]
-        ani = animation.ArtistAnimation(fig, ims, interval=1000, repeat_delay=1000, blit=True)
+        ims = [[plt.imshow(np.transpose(
+            i, (1, 2, 0)), animated=True)] for i in gan_service.img_list]
+        ani = animation.ArtistAnimation(
+            fig, ims, interval=1000, repeat_delay=1000, blit=True)
         HTML(ani.to_jshtml())
+        plt.pause(0.5)
+        time.sleep(15)
 
     @staticmethod
     def show_comparison():
@@ -331,7 +337,8 @@ class GbcGanService:
         plt.title("Real Images")
         plt.imshow(np.transpose(
             vutils.make_grid(
-                real_batch[0].to(gan_service.device)[:64], padding=5, normalize=True).cpu(), (1, 2, 0)))
+                real_batch[0].to(gan_service.device)[:64],
+                padding=5, normalize=True).cpu(), (1, 2, 0)))
 
         # Plot the fake images from the last epoch
         plt.subplot(1, 2, 2)
@@ -339,6 +346,8 @@ class GbcGanService:
         plt.title("Fake Images")
         plt.imshow(np.transpose(gan_service.img_list[-1], (1, 2, 0)))
         plt.show()
+        plt.pause(0.5)
+        time.sleep(15)
 
 
 if __name__ == '__main__':

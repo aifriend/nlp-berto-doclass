@@ -533,3 +533,10 @@ ipython_config.py
 /model/image/
 /model/text/
 /data/celeba/
+/ner/data/
+/ner/data_volume/
+/ner/model/
+/image/data/
+/image/model/
+/gan/data/
+/gan/model/

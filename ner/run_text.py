@@ -17,7 +17,7 @@ from transformers import BertTokenizer
 
 class GbcNlpService:
     DEVICE_TYPE = 'cuda'
-    DATA_DIR = 'data/from_text'
+    DATA_DIR = 'data/'
     DATA_SET = 'title_conference.csv'
     LEARNING_RATE = 1e-5
     BATCH_SIZE = 3
@@ -139,6 +139,10 @@ class GbcNlpService:
                                                  sampler=SequentialSampler(self.dataset_val),
                                                  batch_size=self.BATCH_SIZE)
 
+    @staticmethod
+    def pre_processing(filename):
+        pass
+
     def modeling(self):
         """
         We are treating each text as its unique sequence, so one sequence will be classified to one labels
@@ -197,7 +201,8 @@ class GbcNlpService:
             y_preds = preds_flat[labels_flat == label]
             y_true = labels_flat[labels_flat == label]
             print(f'Class: {label_dict_inverse[label]}')
-            print(f'Accuracy: {len(y_preds[y_preds == label])}/{len(y_true)}\n')
+            print(f'Accuracy: {len(y_preds[y_preds == label])}/{len(y_true)}'
+                  f' -> {round(len(y_preds[y_preds == label])/len(y_true))}\n')
 
     def _evaluate(self):
         self.model.eval()
@@ -294,7 +299,7 @@ class GbcNlpService:
         self.model.to(self.device)
 
         self.model.load_state_dict(
-            torch.load('data_volume/finetuned_BERT_epoch_1.model',
+            torch.load('data_volume/finetuned_BERT_epoch_5.model',
                        map_location=torch.device(self.DEVICE_TYPE)))
 
         _, predictions, true_vals = self._evaluate()
