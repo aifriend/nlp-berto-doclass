@@ -540,3 +540,6 @@ ipython_config.py
 /image/model/
 /gan/data/
 /gan/model/
+/class/data/
+/class/model/
+/class/data_volume/

@@ -202,7 +202,7 @@ class GbcNlpService:
             y_true = labels_flat[labels_flat == label]
             print(f'Class: {label_dict_inverse[label]}')
             print(f'Accuracy: {len(y_preds[y_preds == label])}/{len(y_true)}'
-                  f' -> {round(len(y_preds[y_preds == label])/len(y_true))}\n')
+                  f' -> {len(y_preds[y_preds == label])/len(y_true)}\n')
 
     def _evaluate(self):
         self.model.eval()
