@@ -11,14 +11,14 @@ from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from torch.utils.data import TensorDataset
 from tqdm import tqdm
 from transformers import AdamW, get_linear_schedule_with_warmup
-from transformers import BertForSequenceClassification
-from transformers import BertTokenizer
+from transformers import AutoModelForTokenClassification
+from transformers import AutoTokenizer
 
 
 class GbcNlpService:
     DEVICE_TYPE = 'cuda'
     DATA_DIR = 'data/'
-    DATA_SET = 'title_conference.csv'
+    DATA_SET = '.csv'
     LEARNING_RATE = 1e-5
     BATCH_SIZE = 3
     NUM_EPOCHS = 5
@@ -73,6 +73,30 @@ class GbcNlpService:
         self.df.loc[X_val, 'data_type'] = 'val'
         print(f"\n{self.df.groupby(['Category', 'label', 'data_type']).count()}")
 
+    def pre_processing(self):
+        """
+        The following steps are done in the preprocessing:
+            1) Addition of ‘CLS’ token to the beginning of the sentence.
+            2) Addition of ‘SEP’ token to the end of the sentence.
+            3) padding the sequence and the labels for max_seq_length
+            4) input_ids : converting the tokens to ids using the BERT tokenizer
+            5) input_mask : to indicate which elements in the sequence are tokens and which are padding elements
+            6) segment_ids : 0 for the first sequence, 1 for the second sequence. We have a single sequence,
+            hence the all the tokens in the sentence will have 0 as segment_ids
+            7) label_ids : integer values for each of the labels
+            8) label_mask : True to indicate which elements are labels and False for padding elements
+            9) valid_ids: BERT uses word-piece tokenization.
+
+            ['EU', 'rejects', 'German', 'call', 'to', 'boycott', 'British', 'la', '##mb', '.']
+            input_ids - [101, 7270, 22961, 1528, 1840, 1106, 21423, 1418, 2495, 12913, 119, 102, 0, 0, 0, 0]
+            input_mask - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0]
+            segment_ids - [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            label_ids - [10, 6, 1, 2, 1, 1, 1, 2, 1, 1, 11, 0, 0, 0, 0, 0]
+            label_mask - [True, True, True, True, True, True, True, True, True, True, True, False, False, False, False, False]
+            valid_ids - [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1] # 0 for '##mb'
+        """
+        pass
+
     def tokenizer(self):
         """
         Tokenization is a process to take raw texts and split into tokens, which are numeric data to represent words.
@@ -90,7 +114,7 @@ class GbcNlpService:
         And then we need to split the data into input_ids, attention_masks and labels.
         Finally, after we get encoded data set, we can create training data and validation data.
         """
-        tokenizer = BertTokenizer.from_pretrained(
+        tokenizer = AutoTokenizer.from_pretrained(
             self.BERT_MODEL,
             use_fast=False,
             strip_accents=True,
@@ -154,7 +178,7 @@ class GbcNlpService:
         We use RandomSampler for training and SequentialSampler for validation.
         Given the limited memory in my environment, I set batch_size=3.
         """
-        self.model = BertForSequenceClassification.from_pretrained(
+        self.model = AutoModelForTokenClassification.from_pretrained(
             self.BERT_MODEL,
             num_labels=len(self.label_dict),
             output_attentions=False,
@@ -206,6 +230,29 @@ class GbcNlpService:
 
     def _evaluate(self):
         self.model.eval()
+
+        # label_list = [
+        #     "O",  # Outside of a named entity
+        #     "B-MISC",  # Beginning of a miscellaneous entity right after another miscellaneous entity
+        #     "I-MISC",  # Miscellaneous entity
+        #     "B-PER",  # Beginning of a person's name right after another person's name
+        #     "I-PER",  # Person's name
+        #     "B-ORG",  # Beginning of an organisation right after another organisation
+        #     "I-ORG",  # Organisation
+        #     "B-LOC",  # Beginning of a location right after another location
+        #     "I-LOC"  # Location
+        # ]
+        #
+        # sequence = "Hugging Face Inc. is a company based in New York City. Its headquarters are in DUMBO"
+        #
+        # # Bit of a hack to get the tokens with the special tokens
+        # tokens = tokenizer.tokenize(tokenizer.decode(tokenizer.encode(sequence)))
+        # inputs = tokenizer.encode(sequence, return_tensors="pt")
+        #
+        # outputs = model(inputs)[0]
+        # predictions = torch.argmax(outputs, dim=2)
+        #
+        # print([(token, label_list[prediction]) for token, prediction in zip(tokens, predictions[0].tolist())])
 
         loss_val_total = 0
         predictions, true_vals = [], []
@@ -290,7 +337,7 @@ class GbcNlpService:
             tqdm.write(f'F1 Score (Weighted): {val_f1}')
 
     def predict(self):
-        self.model = BertForSequenceClassification.from_pretrained(
+        self.model = AutoModelForTokenClassification.from_pretrained(
             self.BERT_MODEL,
             num_labels=len(self.label_dict),
             output_attentions=False,

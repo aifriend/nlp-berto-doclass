@@ -41,6 +41,7 @@ class GbcNlpService:
         self.scheduler = None
         self.device = torch.device(
             self.DEVICE_TYPE if torch.cuda.is_available() else "cpu")
+        print(f"Device: {self.device}")
 
     def load_data(self):
         # read dataset from CSV
@@ -299,7 +300,7 @@ class GbcNlpService:
         self.model.to(self.device)
 
         self.model.load_state_dict(
-            torch.load('data_volume/finetuned_BERT_epoch_5.model',
+            torch.load(f'data_volume/finetuned_BERT_epoch_{self.NUM_EPOCHS}.model',
                        map_location=torch.device(self.DEVICE_TYPE)))
 
         _, predictions, true_vals = self._evaluate()

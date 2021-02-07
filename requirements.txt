@@ -5,6 +5,10 @@ sklearn~=0.0
 scikit-learn~=0.24.1
 tqdm~=4.56.0
 transformers~=4.2.1
-torchvision~=0.8.2+cu101
 matplotlib~=3.3.3
 ipython~=7.19.0
+seqeval~=1.2.2
+gluonnlp~=0.10.0
+torchvision==0.8.2+cu101
+allennlp~=2.0.1
+Pillow~=8.1.0
