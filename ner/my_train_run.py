@@ -17,7 +17,7 @@ from transformers import AutoTokenizer
 
 class GbcNlpService:
     DEVICE_TYPE = 'cuda'
-    DATA_DIR = 'data/'
+    DATA_DIR = 'preprocess/data/'
     DATA_SET = '.csv'
     LEARNING_RATE = 1e-5
     BATCH_SIZE = 3
@@ -215,19 +215,6 @@ class GbcNlpService:
         labels_flat = labels.flatten()
         return f1_score(labels_flat, preds_flat, average='weighted')
 
-    def _accuracy_per_class(self, preds, labels):
-        label_dict_inverse = {v: k for k, v in self.label_dict.items()}
-
-        preds_flat = np.argmax(preds, axis=1).flatten()
-        labels_flat = labels.flatten()
-
-        for label in np.unique(labels_flat):
-            y_preds = preds_flat[labels_flat == label]
-            y_true = labels_flat[labels_flat == label]
-            print(f'Class: {label_dict_inverse[label]}')
-            print(f'Accuracy: {len(y_preds[y_preds == label])}/{len(y_true)}'
-                  f' -> {len(y_preds[y_preds == label])/len(y_true)}\n')
-
     def _evaluate(self):
         self.model.eval()
 
@@ -336,22 +323,6 @@ class GbcNlpService:
             val_f1 = self._f1_score_func(predictions, true_vals)
             tqdm.write(f'F1 Score (Weighted): {val_f1}')
 
-    def predict(self):
-        self.model = AutoModelForTokenClassification.from_pretrained(
-            self.BERT_MODEL,
-            num_labels=len(self.label_dict),
-            output_attentions=False,
-            output_hidden_states=False)
-
-        self.model.to(self.device)
-
-        self.model.load_state_dict(
-            torch.load('data_volume/finetuned_BERT_epoch_5.model',
-                       map_location=torch.device(self.DEVICE_TYPE)))
-
-        _, predictions, true_vals = self._evaluate()
-        self._accuracy_per_class(predictions, true_vals)
-
 
 if __name__ == '__main__':
     text_service = GbcNlpService()
@@ -367,6 +338,3 @@ if __name__ == '__main__':
 
     print(f"\nTraining...")
     text_service.train()
-
-    print(f"\nPrediction...")
-    text_service.predict()

@@ -1,0 +1,2 @@
+{"words": ["EU", "rejects", "German", "call", "to", "boycott", "British", "lamb", "."], "ner": ["B-ORG", "O", "B-MISC", "O", "O", "O", "B-MISC", "O", "O"]}
+{"words": ["Peter", "Blackburn"], "ner": ["B-PER", "I-PER"]}
