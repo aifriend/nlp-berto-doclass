@@ -546,3 +546,5 @@ ipython_config.py
 /ner/doc/
 /ner/test_ner/
 /ner/source/
+/class/preprocess/dataset/
+/ner/preprocess/0_source_data/dataset/
