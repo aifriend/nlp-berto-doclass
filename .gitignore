@@ -548,3 +548,6 @@ ipython_config.py
 /ner/source/
 /class/preprocess/dataset/
 /ner/preprocess/0_source_data/dataset/
+/ner/preprocess/2_data_format/data/
+/ner/preprocess/2_data_format/datax/
+/ner/preprocess/2_data_format/model/

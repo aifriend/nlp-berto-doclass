@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from torch.utils.data import TensorDataset
 from tqdm import tqdm
-from transformers import AdamW, get_linear_schedule_with_warmup
+from transformers import AdamW, get_linear_schedule_with_warmup, AutoTokenizer
 from transformers import BertForSequenceClassification
 from transformers import BertTokenizer
 
@@ -25,6 +25,7 @@ class GbcNlpService:
 
     # BETO Bert spanish pre-trained
     # 'dccuchile/bert-base-spanish-wwm-uncased'
+    # 'mrm8488/RuPERTa-base'
     BERT_MODEL = 'bert-base-uncased'
 
     def __init__(self):
